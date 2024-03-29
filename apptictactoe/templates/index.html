@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      body {
+        background-color: rgb(16, 16, 16);
+        color: rgb(150, 150, 200);
+      }
+      button {
+        background-color: rgb(16, 16, 16);
+        border-color: rgb(150, 150, 200);
+        color: rgb(150, 150, 200);
+      }
+      p {
+        font-size: 0.5em;
+      }
+      table {
+        font-family: monospace, monospace;
+      }
+    </style>
+    <title>TicTacToe</title>
+  </head>
+  <body onload="updateUI(tictactoe_positions, status)">
+    <h3>Welcome to TicTacToe</h3>
+    <h1>
+      <table>
+        <tr>
+          <th id="00" onclick="makeMove('00')">_</th>
+          <th id="01" onclick="makeMove('01')">_</th>
+          <th id="02" onclick="makeMove('02')">_</th>
+        </tr>
+        <tr>
+          <th id="10" onclick="makeMove('10')">_</th>
+          <th id="11" onclick="makeMove('11')">_</th>
+          <th id="12" onclick="makeMove('12')">_</th>
+        </tr>
+        <tr>
+          <th id="20" onclick="makeMove('20')">_</th>
+          <th id="21" onclick="makeMove('21')">_</th>
+          <th id="22" onclick="makeMove('22')">_</th>
+        </tr>
+      </table>
+    </h1>
+    <button onclick="resetGame()">Reset Game</button>
+    <h4 id="status"></h4>
+    <p id="link">
+      Share the following link with the person you want to play against:<br>{{ link }}
+    </p>
+    <script>
+            let symbol = '{{symbol}}';
+            let game_id = '{{game_id}}';
+            let my_player_id = '{{my_player_id}}';
+            let status = '{{status}}';
+            let tictactoe_positions = {{tictactoe_positions|safe}};
+
+            setInterval(checkForServerUpdate, 1000)
+
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    let cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        let cookie = cookies[i].trim();
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+
+            function updateUI(board_positions, status_text) {
+                status_element = document.getElementById('status')
+                status_element.innerText = status_text
+
+                console.log("Updating board with positions:");
+                console.log(board_positions);
+                ["00", "01", "02", "10", "11", "12", "20", "21", "22"].forEach( position => {
+                    document.getElementById(position).innerText = board_positions[position]
+                })
+            }
+
+            function resetGame() {
+                console.log("resetting game...")
+                url = "{% url 'tictactoe-reset' game_id %}"
+                let csrftoken = getCookie('csrftoken');
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        "X-CSRFToken": csrftoken
+                    } 
+                })
+                .then(res => 
+                    res.json()
+                ).then( data => {
+                    updateUI(data.tictactoe_positions, data.status);
+                })
+                .catch(errorMsg => { console.log(errorMsg); });
+            }
+
+            function makeMove(id) {
+                url = "{% url 'tictactoe-make-move' game_id my_player_id 'XX' %}".replace('XX', id)
+                let csrftoken = getCookie('csrftoken');
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        "X-CSRFToken": csrftoken
+                    } 
+                })
+                .then(res => 
+                    res.json()
+                ).then( data => {
+                    console.log("data:");
+                    console.log(data);
+                    updateUI(data.tictactoe_positions, data.status);
+                })
+                .catch(errorMsg => { console.log(errorMsg); });
+            }
+
+            function checkForServerUpdate() {
+                url = "{% url 'tictactoe-get-updates' game_id my_player_id %}";
+                let csrftoken = getCookie('csrftoken');
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        "X-CSRFToken": csrftoken
+                    }
+                })
+                .then(res => 
+                    res.json()
+                ).then( data => {
+                    console.log(data)
+                    updateUI(data.tictactoe_positions, data.status);
+                })
+                .catch(errorMsg => { console.log(errorMsg); });
+            }
+            
+        </script>
+  </body>
+</html>
+
+<!-- TODO: try django's built in csrf token -->
+<!-- <form method="post">{% csrf_token %} -->

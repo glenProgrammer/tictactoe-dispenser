@@ -1,0 +1,6 @@
+Pipfile
+Pipfile.lock
+db.sqlite3
+.vscode
+*.pyc
+apptictactoe/migrations/*
