@@ -60,6 +60,8 @@ class Game:
         Args:
             row (int): The row where the player will try to place their mark
             col (int): The column where the player will try to place their mark
+            If either argument is ommitted, this method will prompt the user for
+            a position from the console.
 
         Returns:
             bool: Indicates whether or not the play successfully executed.
