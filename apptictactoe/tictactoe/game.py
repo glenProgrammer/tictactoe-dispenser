@@ -23,12 +23,6 @@ class Game:
             self.players = players
             self.current_player = current_player
 
-    def _get_my_mark(self, player_id: int) -> str:
-        for player in self.players:
-            if player.id == player_id:
-                return player.mark
-        raise RuntimeWarning(f"Couldn't find mark for player with id {player_id}")
-
     def get_status(self, player_id: int) -> str:
         """Get status of player, i.e. if it's the player's turn,
            if the player won the game, etc.
@@ -131,6 +125,27 @@ class Game:
                 return False
         return True
 
+    def detect_victory(self) -> tuple[bool, Player]:
+        """Detects if anyone has won the game.  This implies that
+           someone also lost the game.
+
+        Returns:
+            tuple[bool, Player]: Returns a tuple that contains True
+             if someone won and a reference to the winning player
+             when someone won
+        """
+        paths_to_victory = self._get_paths_to_victory()
+
+        for path_to_victory in paths_to_victory:
+            first_value = self.board.positions.get(path_to_victory[0])
+            if first_value != EMPTY:
+                if all(
+                    self.board.positions.get(position) == first_value
+                    for position in path_to_victory[1::]
+                ):
+                    return True, first_value
+        return False, None
+    
     def _get_paths_to_victory(_) -> list[list[tuple[int, int]]]:
         """Compiles a list of paths to victory.  Specifically,
            the horizontal, vertical, and diagonal lines of
@@ -169,27 +184,12 @@ class Game:
         paths_to_victory.append(victory_path)
 
         return paths_to_victory
-
-    def detect_victory(self) -> tuple[bool, Player]:
-        """Detects if anyone has won the game.  This implies that
-           someone also lost the game.
-
-        Returns:
-            tuple[bool, Player]: Returns a tuple that contains True
-             if someone won and a reference to the winning player
-             when someone won
-        """
-        paths_to_victory = self._get_paths_to_victory()
-
-        for path_to_victory in paths_to_victory:
-            first_value = self.board.positions.get(path_to_victory[0])
-            if first_value != EMPTY:
-                if all(
-                    self.board.positions.get(position) == first_value
-                    for position in path_to_victory[1::]
-                ):
-                    return True, first_value
-        return False, None
+    
+    def _get_my_mark(self, player_id: int) -> str:
+        for player in self.players:
+            if player.id == player_id:
+                return player.mark
+        raise RuntimeWarning(f"Couldn't find mark for player with id {player_id}")
 
 
 # Sanity test
