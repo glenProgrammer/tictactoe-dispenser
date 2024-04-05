@@ -107,8 +107,7 @@ class Game:
         return did_someone_win or self.detect_stalemate()
 
     def display_board(self) -> None:
-        """Display game board to console
-        """
+        """Display game board to console"""
         print(self.board)
 
     def detect_stalemate(self) -> bool:
@@ -147,7 +146,7 @@ class Game:
                 ):
                     return True, first_value
         return False, None
-    
+
     def _get_paths_to_victory(_) -> list[list[tuple[int, int]]]:
         """Compiles a list of paths to victory.  Specifically,
            the horizontal, vertical, and diagonal lines of
@@ -186,7 +185,7 @@ class Game:
         paths_to_victory.append(victory_path)
 
         return paths_to_victory
-    
+
     def _get_my_mark(self, player_id: int) -> str:
         for player in self.players:
             if player.id == player_id:
