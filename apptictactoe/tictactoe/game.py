@@ -107,6 +107,8 @@ class Game:
         return did_someone_win or self.detect_stalemate()
 
     def display_board(self) -> None:
+        """Display game board to console
+        """
         print(self.board)
 
     def detect_stalemate(self) -> bool:
