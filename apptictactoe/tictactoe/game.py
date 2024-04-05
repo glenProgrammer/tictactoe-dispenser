@@ -39,7 +39,6 @@ class Game:
         Returns:
             str: A string that describes the player's status
         """
-        # TODO: would this be more elegant with a switch statement?
         did_someone_win, winning_mark = self.detect_victory()
         if did_someone_win:
             my_mark = self._get_my_mark(player_id)
@@ -54,6 +53,17 @@ class Game:
         return "Waiting for other player..."
 
     def play_turn(self, row: int, col: int) -> bool:
+        """Tries to place player's mark at the row and column indicated.
+           It will not be placed if the position was not free or the position
+           is not valid.
+
+        Args:
+            row (int): The row where the player will try to place their mark
+            col (int): The column where the player will try to place their mark
+
+        Returns:
+            bool: Indicates whether or not the play successfully executed.
+        """
         print(self.current_player.mark + " turn.")
         print(row, col)
         row, col = (
@@ -92,6 +102,11 @@ class Game:
         return self.players[0]
 
     def is_game_over(self) -> bool:
+        """Detects if the game is over
+
+        Returns:
+            bool: Returns True if the game is over
+        """
         did_someone_win, _ = self.detect_victory()
         return did_someone_win or self.detect_stalemate()
 
@@ -99,6 +114,11 @@ class Game:
         print(self.board)
 
     def detect_stalemate(self) -> bool:
+        """Detects if neither player can win
+
+        Returns:
+            bool: A True value indicates that a stalemate was detected
+        """
         paths_to_victory = self._get_paths_to_victory()
         for path_to_victory in paths_to_victory:
             marks = set()
@@ -110,6 +130,16 @@ class Game:
         return True
 
     def _get_paths_to_victory(_) -> list[list[tuple[int, int]]]:
+        """Compiles a list of paths to victory.  Specifically,
+           the horizontal, vertical, and diagonal lines of
+           the board
+
+        Returns:
+            list[list[tuple[int, int]]]: This is a list of lists.
+             The sublists each contain a list of positions on the board
+             where if each position has the same player's mark,
+             that player will win the game.
+        """
         paths_to_victory = []
 
         # row victories
@@ -139,6 +169,14 @@ class Game:
         return paths_to_victory
 
     def detect_victory(self) -> tuple[bool, Player]:
+        """Detects if anyone has won the game.  This implies that
+           someone also lost the game.
+
+        Returns:
+            tuple[bool, Player]: Returns a tuple that contains True
+             if someone won and a reference to the winning player
+             when someone won
+        """
         paths_to_victory = self._get_paths_to_victory()
 
         for path_to_victory in paths_to_victory:
