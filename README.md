@@ -1,6 +1,6 @@
 Two player games of tictactoe.  Supports multiple games played simultaneously.  Written in Python with Django.
   
-Pre-requisites:
+Pre-requisites:  
 Python 3.11 or higher  
 Install django with pip  
   
